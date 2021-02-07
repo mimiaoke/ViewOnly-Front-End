@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+   <!-- style -->
+    <link rel="stylesheet" href="css/map_upload.css">
+    <link rel="stylesheet" href="css/map.css">
+
+     <!-- Leaflets -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+    <!-- DropZone -->
+    <link rel="stylesheet" type="text/css" href="css/dropzone.min.css">
+    <script src="js/dropzone.min.js"></script>
+
+
+</head>
+<body>
+	
+	
+    <div class="navigation">	
+
+	<div class="header">
+
+		<div class="text-center">
+			<h3>Share your artwork!</h3>
+		</div>
+
+
+    <form action="/file-upload"
+      class="dropzone"
+      id="my-awesome-dropzone">
+    </form>
+
+		<div class="textarea">
+		<textarea cols="83" rows="6" id="text" placeholder="Introduce your idea..."></textarea><hr>
+		</div>
+		<div class="form">
+
+			</div>
+
+
+    </div> 
+		
+		
+		<button type="button" class="btn btn-dark">Upload</button>
+    </div>
+
+
+    <div id="mapid"></div>
+    <script type="text/javascript">
+        //toggle menu
+        function toggleMenu(){
+            let navigation = document.querySelector('.navigation');
+            let toggle = document.querySelector('.toggle');
+            navigation.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+    </script>
+
+
+	 <script>
+
+
+     //AJAX for connecting to database
+
+    // var photoLayer = L.photo.cluster().on('click', function (evt) {
+    //    var photo = evt.layer.photo,
+    //     template = '<img src="img/team-01.jpg" width="300" height="300" /></a><p>This is a graffiti introduction.</p>';
+    //    evt.layer.bindPopup(L.Util.template(template, photo), {
+    //      className: 'leaflet-popup-photo',
+    //      minWidth: 300
+    //    }).openPopup();
+    //  });
+
+      // reqwest({
+      //  url: 'http://turban.cartodb.com/api/v2/sql?q=SELECT latitude AS lat, longitude AS lng, image_thumb AS thumbnail, image_standard AS url, caption FROM instagram WHERE the_geom %26%26 ST_SetSRID(ST_MakeBox2D(ST_Point(-3.236,55.928), ST_Point(6, 59.305)), 4326)',
+      //  success: function (data) {
+      //    photoLayer.add(data.rows).addTo(map);
+      //    map.fitBounds(photoLayer.getBounds());
+      //  }
+      //  });
+
+    //set photolayer
+      var cities = L.layerGroup();
+
+      L.marker([55.938273, -3.160973]).bindPopup('<img src="img/team/team-01.jpg" width="300" height="300" /><p>This is a graffiti introduction.</p>').addTo(cities),
+      L.marker([55.946524, -3.207779]).bindPopup('<img src="img/team/team-01.jpg" width="300" height="300" /><p>This is a graffiti introduction.</p>').addTo(cities),
+      L.marker([55.953477, -3.183002]).bindPopup('<img src="img/team/team-01.jpg" width="300" height="300" /><p>This is a graffiti introduction.</p>').addTo(cities);
+
+      var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+          'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
+      var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
+        streets  = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+
+      var overlays = {
+        "Cities": cities
+      };
+
+
+    //Initiation
+      var map = L.map('mapid',{layers: [cities]}).fitWorld();
+
+      // Get My Location
+      L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+    maxZoom: 18,
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+      'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    id: 'mapbox/streets-v11',
+    tileSize: 512,
+    zoomOffset: -1
+    }).addTo(map);
+
+    function onLocationFound(e) {
+
+      L.marker(e.latlng).addTo(map)
+
+    }
+
+    function onLocationError(e) {
+      alert(e.message);
+    }
+
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+
+    map.locate({setView: true, maxZoom: 16});
+
+  // Get Mouse Position
+
+    var popup = L.popup();
+
+
+    function onMapClick(e) {
+      var position = e.latlng.toString();
+      popup
+        .setLatLng(e.latlng)
+        .setContent("You clicked the map at " + position)
+        .openOn(map);
+
+    }
+
+
+    map.on('click', onMapClick);
+
+
+        </script>
+
+        <script type="text/javascript">
+
+         Dropzone.autoDiscover = false;
+                dzAllocationFiles = new Dropzone("div#file-container", {
+                    , autoDiscover: false
+                        , maxFiles: 1
+                        , autoQueue: true
+                    , addRemoveLinks: true
+
+                });
+
+                dzAllocationFiles.on("success", function (file, response) {
+            // Success Operations
+                });
+
+                dzAllocationFiles.on("maxfilesexceeded", function (file, response) {
+                    allocationFileNames = [];
+                    this.removeAllFiles();
+                    this.addFile(file);
+                });
+        </script>
+
+
+	
+</body>
+</html>
